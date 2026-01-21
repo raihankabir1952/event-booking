@@ -20,7 +20,7 @@ export class BookingsService {
   ) {}
 
   async createBooking(eventId: number, user: User) {
-    // 1️⃣ Event exists check
+    // 1️⃣ ইভেন্টটি ডাটাবেসে আছে কি না চেক করা
     const event = await this.eventRepo.findOne({
       where: { id: eventId },
     });
@@ -29,7 +29,16 @@ export class BookingsService {
       throw new NotFoundException('Event not found');
     }
 
-    // 2️⃣ Duplicate booking check
+    // 2️⃣ চেক করা: ইভেন্টে সিট খালি আছে কি না (Capacity Check)
+    const currentAttendees = await this.bookingRepo.count({
+      where: { event: { id: eventId } },
+    });
+
+    if (currentAttendees >= event.capacity) {
+      throw new BadRequestException('Event is full! No more seats available.');
+    }
+
+    // 3️⃣ চেক করা: এই ইউজার আগে থেকেই বুকিং করে রেখেছে কি না (Duplicate check)
     const existingBooking = await this.bookingRepo.findOne({
       where: {
         user: { id: user.id },
@@ -41,7 +50,7 @@ export class BookingsService {
       throw new BadRequestException('You already booked this event');
     }
 
-    // 3️⃣ Create & save booking
+    // 4️⃣ সব ঠিক থাকলে বুকিং তৈরি এবং সেভ করা
     const booking = this.bookingRepo.create({
       event,
       user,
