@@ -5,6 +5,7 @@ import { Event } from './entities/event.entity';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
 import { User } from 'src/users/entities/user.entity';
+import { FilterEventDto } from './dto/filter-event.dto';
 
 @Injectable()
 export class EventsService {
@@ -49,4 +50,23 @@ export class EventsService {
     await this.eventsRepository.remove(event);
     return event;
   }
+
+  // GET /events/search
+
+  async searchEvents(filterDto: FilterEventDto) {
+  const { date, location } = filterDto;
+
+  const query = this.eventsRepository.createQueryBuilder('event');
+
+  if (date) {
+    query.andWhere('CAST(event.date AS DATE) = :date', { date });
+  }
+
+  if (location) {
+    query.andWhere('event.location ILIKE :location', { location: `%${location}%` });
+  }
+
+  return query.getMany();
+}
+
 }

@@ -8,14 +8,16 @@ import {
   Param, 
   ParseIntPipe, 
   UseGuards, 
-  Req 
+  Req, 
+  Query
 } from '@nestjs/common';
 import { EventsService } from './events.service';
-import type { CreateEventDto } from './dto/create-event.dto';
-import type { UpdateEventDto } from './dto/update-event.dto';
+import { CreateEventDto } from './dto/create-event.dto';
+import { UpdateEventDto } from './dto/update-event.dto';
+import { FilterEventDto } from './dto/filter-event.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import type { User } from 'src/users/entities/user.entity';
-import type { Request } from 'express';
+import { User } from 'src/users/entities/user.entity'; 
+import { Request } from 'express';
 
 // Extend Request to include user from JWT
 interface RequestWithUser extends Request {
@@ -26,21 +28,29 @@ interface RequestWithUser extends Request {
 export class EventsController {
   constructor(private readonly eventsService: EventsService) {}
 
-  // GET /events
+  // ১. GET /events 
   @UseGuards(JwtAuthGuard)
   @Get()
   getAllEvents() {
     return this.eventsService.findAll();
   }
 
-  // GET /events/:id
+  // ২. GET /events/search
+  
+  @UseGuards(JwtAuthGuard)
+  @Get('search')
+  searchEvents(@Query() filterDto: FilterEventDto) {
+    return this.eventsService.searchEvents(filterDto);
+  }
+
+  // ৩. GET /events/:id 
   @UseGuards(JwtAuthGuard)
   @Get(':id')
   getEventById(@Param('id', ParseIntPipe) id: number) {
     return this.eventsService.findById(id);
   }
 
-  // POST /events
+  // ৪. POST /events 
   @UseGuards(JwtAuthGuard)
   @Post()
   createEvent(
@@ -51,7 +61,7 @@ export class EventsController {
     return this.eventsService.create(createEventDto, user);
   }
 
-  // PATCH /events/:id
+  // ৫. PATCH /events/:id 
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
   updateEvent(
@@ -61,7 +71,7 @@ export class EventsController {
     return this.eventsService.update(id, updateEventDto);
   }
 
-  // DELETE /events/:id
+  // ৬. DELETE /events/:id 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
   deleteEvent(@Param('id', ParseIntPipe) id: number) {

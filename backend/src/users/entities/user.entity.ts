@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-// import { Booking } from '../../bookings/entities/booking.entity';
-import { Event } from '../../events/entities/event.entity';
+import { Event } from 'src/events/entities/event.entity';
+import { Booking } from 'src/bookings/entities/booking.entity';
 
 @Entity()
 export class User {
@@ -16,9 +16,11 @@ export class User {
   @Column()
   name: string;
 
-  @OneToMany(() => Event, event => event.creator)
+  // Relation: User can create multiple events
+  @OneToMany(() => Event, (event) => event.creator)
   events: Event[];
 
-  // @OneToMany(() => Booking, booking => booking.user)
-  // bookings: Booking[];
+  // Relation: User can have multiple bookings
+  @OneToMany(() => Booking, (booking) => booking.user)
+  bookings: Booking[];
 }
