@@ -1,4 +1,3 @@
-// frontend/components/TicketModal.tsx
 'use client';
 
 import React, { useRef } from 'react';
@@ -18,7 +17,7 @@ export default function TicketModal({ booking, onClose }: TicketProps) {
     if (!ticketRef.current) return;
 
     try {
-      // Step 1: Capture the element as a canvas
+      // Capture the element as a canvas
       const canvas = await html2canvas(ticketRef.current, {
         scale: 2,
         useCORS: true,
@@ -34,7 +33,7 @@ export default function TicketModal({ booking, onClose }: TicketProps) {
         }
       });
       
-      // Step 2: Convert to PDF
+      // Convert to PDF
       const imgData = canvas.toDataURL('image/jpeg', 1.0);
       const pdf = new jsPDF('p', 'mm', 'a4');
       

@@ -1,3 +1,5 @@
+// src/users/entities/user.entity.ts
+
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { Event } from 'src/events/entities/event.entity';
 import { Booking } from 'src/bookings/entities/booking.entity';
@@ -16,11 +18,16 @@ export class User {
   @Column()
   name: string;
 
-  // Relation: User can create multiple events
+  
+  @Column({ type: 'varchar', nullable: true }) 
+  resetPasswordToken: string | null;
+
+  @Column({ type: 'timestamp', nullable: true })
+  resetPasswordExpires: Date | null;
+
   @OneToMany(() => Event, (event) => event.creator)
   events: Event[];
 
-  // Relation: User can have multiple bookings
   @OneToMany(() => Booking, (booking) => booking.user)
   bookings: Booking[];
 }
