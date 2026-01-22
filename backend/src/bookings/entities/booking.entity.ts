@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, ManyToOne, CreateDateColumn } from 'typeorm';
 import { Event } from 'src/events/entities/event.entity';
 import { User } from 'src/users/entities/user.entity';
 
@@ -12,4 +12,7 @@ export class Booking {
 
   @ManyToOne(() => Event, event => event.bookings)
   event: Event;
+
+  @CreateDateColumn() 
+  createdAt: Date;
 }

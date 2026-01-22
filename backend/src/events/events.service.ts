@@ -1,3 +1,5 @@
+// backend/src/events/events.service.ts
+
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -78,7 +80,7 @@ export class EventsService {
     return event;
   }
 
-  // ৭. ইভেন্টের Attendee লিস্ট পাওয়া (Total Count সহ)
+  // ৭. ইভেন্টের Attendee লিস্ট পাওয়া (নতুন বুকিং সবার উপরে সর্ট করা)
   async getAttendeeList(eventId: number, userId: number) {
     const event = await this.eventsRepository.findOne({
       where: { id: eventId, creator: { id: userId } },
@@ -89,11 +91,17 @@ export class EventsService {
       throw new NotFoundException('Event not found or you are not the creator');
     }
 
+    // তারিখ অনুযায়ী সর্ট করা (Descending Order - Latest First)
+    const sortedBookings = event.bookings.sort((a, b) => {
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    });
+
     // এটেন্ডি লিস্ট ম্যাপ করা
-    const attendees = event.bookings.map(booking => ({
+    const attendees = sortedBookings.map(booking => ({
       bookingId: booking.id,
       userName: booking.user.name,
       userEmail: booking.user.email,
+      bookedAt: booking.createdAt,
     }));
 
     // আউটপুটে কাউন্ট এবং লিস্ট একসাথে পাঠানো

@@ -5,13 +5,13 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import apiService from '../../../utils/apiService';
 import AuthGuard from '../../components/AuthGuard';
-import { toast } from 'react-toastify';
 
-// ব্যাকএন্ডের EventsService.getAttendeeList এর সাথে মিল রেখে ইন্টারফেস
+// ইন্টারফেস ব্যাকএন্ডের নতুন ফিল্ড 'bookedAt' সহ
 interface Attendee {
   bookingId: number;
   userName: string;
   userEmail: string;
+  bookedAt: string; 
 }
 
 export default function AttendeeListPage() {
@@ -23,19 +23,14 @@ export default function AttendeeListPage() {
   useEffect(() => {
     const fetchAttendees = async () => {
       try {
-        // আপনার কন্ট্রোলার অনুযায়ী সঠিক পাথ: /events/:id/attendees
         const response = await apiService.get(`/events/${eventId}/attendees`);
-        
-        // TypeScript এরর এড়াতে response.data কে (any) হিসেবে কাস্ট করা হয়েছে
         const data = response.data as any;
 
-        // ব্যাকএন্ড থেকে { Count: x, attendees: [] } এভাবে ডাটা আসছে
         if (data && data.attendees) {
           setAttendees(data.attendees as Attendee[]);
         }
       } catch (err: any) {
         console.error("Fetch Error:", err);
-        // apiService ইন্টারসেপ্টর অটোমেটিক টোস্ট দেখাবে
       } finally {
         setLoading(false);
       }
@@ -50,7 +45,7 @@ export default function AttendeeListPage() {
 
   return (
     <AuthGuard>
-      <div className="p-8 max-w-4xl mx-auto text-black">
+      <div className="p-8 max-w-5xl mx-auto text-black">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold text-gray-800">Attendee List</h1>
           <span className="bg-blue-100 text-blue-800 text-sm font-bold px-4 py-2 rounded-full">
@@ -68,6 +63,9 @@ export default function AttendeeListPage() {
                 <th className="px-5 py-4 border-b-2 text-left text-xs font-bold uppercase tracking-wider">
                   Email Address
                 </th>
+                <th className="px-5 py-4 border-b-2 text-left text-xs font-bold uppercase tracking-wider">
+                  Booked At
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -80,11 +78,26 @@ export default function AttendeeListPage() {
                     <td className="px-5 py-5 border-b border-gray-200 text-sm">
                       <p className="text-gray-600">{attendee.userEmail}</p>
                     </td>
+                    <td className="px-5 py-5 border-b border-gray-200 text-sm text-gray-700">
+                      {/* তারিখ ও সময় ফরম্যাট: 22 Jan 2026, 03:20 PM */}
+                      {attendee.bookedAt ? (
+                        new Date(attendee.bookedAt).toLocaleString('en-GB', {
+                          day: '2-digit',
+                          month: 'short',
+                          year: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                          hour12: true
+                        })
+                      ) : (
+                        'N/A'
+                      )}
+                    </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={2} className="px-5 py-10 border-b border-gray-200 bg-white text-sm text-center text-gray-500 italic">
+                  <td colSpan={3} className="px-5 py-10 border-b border-gray-200 bg-white text-sm text-center text-gray-500 italic">
                     No bookings found for this event yet.
                   </td>
                 </tr>
