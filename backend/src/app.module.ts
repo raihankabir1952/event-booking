@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { MailerModule } from '@nestjs-modules/mailer'; // 👈 এটি ইমপোর্ট করুন
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { EventsModule } from './events/events.module';
@@ -17,6 +18,20 @@ import { EventsModule } from './events/events.module';
       database: process.env.DB_NAME,
       autoLoadEntities: true,
       synchronize: true,
+    }),
+    // 👈 MailerModule কনফিগারেশন যোগ করা হয়েছে
+    MailerModule.forRoot({
+      transport: {
+        host: process.env.MAIL_HOST,
+        port: Number(process.env.MAIL_PORT),
+        auth: {
+          user: process.env.MAIL_USER,
+          pass: process.env.MAIL_PASS,
+        },
+      },
+      defaults: {
+        from: '"Event Booking System" <noreply@example.com>',
+      },
     }),
     UsersModule,
     AuthModule,

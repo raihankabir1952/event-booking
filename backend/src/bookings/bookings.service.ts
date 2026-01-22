@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { MailerService } from '@nestjs-modules/mailer';
 import { Booking } from './entities/booking.entity';
 import { Event } from 'src/events/entities/event.entity';
 import { User } from 'src/users/entities/user.entity';
@@ -17,6 +18,11 @@ export class BookingsService {
 
     @InjectRepository(Event)
     private eventRepo: Repository<Event>,
+
+    // @InjectRepository(User) // 👈 User Repository ইনজেক্ট করুন
+    // private userRepo: Repository<User>,
+    
+    private readonly mailerService: MailerService, 
   ) {}
 
   async createBooking(eventId: number, user: User) {
@@ -55,8 +61,20 @@ export class BookingsService {
       event,
       user,
     });
+    await this.bookingRepo.save(booking);
 
-    return this.bookingRepo.save(booking);
+    // 5️⃣ বুকিং সফল হলে কনফার্মেশন ইমেইল পাঠানো (নতুন লজিক)
+    await this.mailerService.sendMail({
+      to: user.email,
+      subject: `Booking Confirmed: ${event.title}`,
+      html: `<h3>Hello ${user.name},</h3>
+             <p>Your booking for <b>${event.title}</b> is confirmed!</p>
+             <p>Location: ${event.location}</p>
+             <p>Date: ${event.date}</p>
+             <p>Thank you for booking with us.</p>`,
+    });
+
+    return booking;
   }
 
   async myBookings(user: User) {
