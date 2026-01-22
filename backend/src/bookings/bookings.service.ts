@@ -19,14 +19,13 @@ export class BookingsService {
     @InjectRepository(Event)
     private eventRepo: Repository<Event>,
 
-    // @InjectRepository(User) // 👈 User Repository ইনজেক্ট করুন
-    // private userRepo: Repository<User>,
+
     
     private readonly mailerService: MailerService, 
   ) {}
 
   async createBooking(eventId: number, user: User) {
-    // 1️⃣ ইভেন্টটি ডাটাবেসে আছে কি না চেক করা
+  
     const event = await this.eventRepo.findOne({
       where: { id: eventId },
     });
@@ -35,7 +34,7 @@ export class BookingsService {
       throw new NotFoundException('Event not found');
     }
 
-    // 2️⃣ চেক করা: ইভেন্টে সিট খালি আছে কি না (Capacity Check)
+    
     const currentAttendees = await this.bookingRepo.count({
       where: { event: { id: eventId } },
     });
@@ -44,7 +43,7 @@ export class BookingsService {
       throw new BadRequestException('Event is full! No more seats available.');
     }
 
-    // 3️⃣ চেক করা: এই ইউজার আগে থেকেই বুকিং করে রেখেছে কি না (Duplicate check)
+    
     const existingBooking = await this.bookingRepo.findOne({
       where: {
         user: { id: user.id },
@@ -56,14 +55,14 @@ export class BookingsService {
       throw new BadRequestException('You already booked this event');
     }
 
-    // 4️⃣ সব ঠিক থাকলে বুকিং তৈরি এবং সেভ করা
+    
     const booking = this.bookingRepo.create({
       event,
       user,
     });
     await this.bookingRepo.save(booking);
 
-    // 5️⃣ বুকিং সফল হলে কনফার্মেশন ইমেইল পাঠানো (নতুন লজিক)
+    
     await this.mailerService.sendMail({
       to: user.email,
       subject: `Booking Confirmed: ${event.title}`,

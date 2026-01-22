@@ -3,7 +3,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import apiService from '../../utils/apiService'; // 👈 এটি ইমপোর্ট করুন
+import apiService from '../../utils/apiService'; 
 import AuthGuard from '../components/AuthGuard';
 
 export default function CreateEventPage() {
@@ -28,13 +28,12 @@ export default function CreateEventPage() {
     }
 
     try {
-      // apiService ব্যবহার করে ইভেন্ট তৈরি API কল করা হচ্ছে
       await apiService.post('/events', 
         { title, description, date, location, capacity: Number(capacity) }
         // header will be added by interceptor
       );
       alert('Event created successfully!');
-      router.push('/dashboard'); // সফল হলে ড্যাশবোর্ডে ফেরত যাওয়া
+      router.push('/dashboard'); 
     } catch (err: any) {
       setError(`Failed to create event: ${err.response?.data?.message || 'Something went wrong.'}`);
     } finally {
@@ -49,7 +48,7 @@ export default function CreateEventPage() {
       <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md">
         {error && <p className="text-red-500 mb-4">{error}</p>}
         
-        {/* ফর্ম ফিল্ডগুলো */}
+        {/* from fields */}
         <div className="mb-4">
           <label className="block text-gray-700 mb-1">Title</label>
           <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required className="w-full border p-2 rounded" />

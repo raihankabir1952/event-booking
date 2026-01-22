@@ -23,7 +23,7 @@ interface Event {
 export default function MyEventsPage() {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
-  const [editingEvent, setEditingEvent] = useState<Event | null>(null); // এডিট স্টেট
+  const [editingEvent, setEditingEvent] = useState<Event | null>(null); 
   const router = useRouter();
 
   const fetchMyEvents = async () => {
@@ -44,7 +44,7 @@ export default function MyEventsPage() {
     fetchMyEvents();
   }, []);
 
-  // ডিলিট করার ফাংশন [৩]
+  // delete function
   const handleDelete = async (id: number) => {
     if (!window.confirm('Are you sure you want to delete this event?')) return;
     try {
@@ -56,7 +56,7 @@ export default function MyEventsPage() {
     }
   };
 
-  // আপডেট করার ফাংশন [৪]
+  // update function 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingEvent) return;
@@ -120,7 +120,7 @@ export default function MyEventsPage() {
           </div>
         )}
 
-        {/* এডিট করার মডাল [৫] */}
+        {/* Edit Modal */}
         {editingEvent && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50">
             <form onSubmit={handleUpdate} className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md">

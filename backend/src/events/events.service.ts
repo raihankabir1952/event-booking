@@ -16,7 +16,7 @@ export class EventsService {
     private eventsRepository: Repository<Event>,
   ) {}
 
-  // ১. সব ইভেন্ট দেখার সময় সাথে attendeeCount দেখাবে
+  // show all events with attendeeCount
   async findAll(): Promise<Event[]> {
     return this.eventsRepository
       .createQueryBuilder('event')
@@ -25,7 +25,7 @@ export class EventsService {
       .getMany();
   }
 
-  // ২. নির্দিষ্ট একটি ইভেন্ট দেখার সময় attendeeCount দেখাবে
+  // get event by id with attendeeCount
   async findById(id: number): Promise<Event> {
     const event = await this.eventsRepository
       .createQueryBuilder('event')
@@ -38,7 +38,7 @@ export class EventsService {
     return event;
   }
 
-  // ৩. সার্চ করার সময়ও attendeeCount দেখাবে
+  // with filters
   async searchEvents(filterDto: FilterEventDto) {
     const { date, location } = filterDto;
 
@@ -58,13 +58,13 @@ export class EventsService {
     return query.getMany();
   }
 
-  // ৪. ইভেন্ট তৈরি করা
+  // create event
   async create(createEventDto: CreateEventDto, user: User): Promise<Event> {
     const event = this.eventsRepository.create({ ...createEventDto, creator: user });
     return this.eventsRepository.save(event);
   }
 
-  // ৫. ইভেন্ট আপডেট করা
+  // update event
   async update(id: number, updateEventDto: UpdateEventDto): Promise<Event> {
     const event = await this.eventsRepository.findOne({ where: { id } });
     if (!event) throw new NotFoundException('Event not found');
@@ -72,7 +72,7 @@ export class EventsService {
     return this.eventsRepository.save(event);
   }
 
-  // ৬. ইভেন্ট ডিলিট করা
+  // delete event
   async remove(id: number): Promise<Event> {
     const event = await this.eventsRepository.findOne({ where: { id } });
     if (!event) throw new NotFoundException('Event not found');
@@ -80,7 +80,7 @@ export class EventsService {
     return event;
   }
 
-  // ৭. ইভেন্টের Attendee লিস্ট পাওয়া (নতুন বুকিং সবার উপরে সর্ট করা)
+  // list of attendees for an event (only for the organizer)
   async getAttendeeList(eventId: number, userId: number) {
     const event = await this.eventsRepository.findOne({
       where: { id: eventId, creator: { id: userId } },
@@ -91,12 +91,12 @@ export class EventsService {
       throw new NotFoundException('Event not found or you are not the creator');
     }
 
-    // তারিখ অনুযায়ী সর্ট করা (Descending Order - Latest First)
+    //(Descending Order - Latest First)
     const sortedBookings = event.bookings.sort((a, b) => {
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     });
 
-    // এটেন্ডি লিস্ট ম্যাপ করা
+    // attendee details array
     const attendees = sortedBookings.map(booking => ({
       bookingId: booking.id,
       userName: booking.user.name,
@@ -104,7 +104,7 @@ export class EventsService {
       bookedAt: booking.createdAt,
     }));
 
-    // আউটপুটে কাউন্ট এবং লিস্ট একসাথে পাঠানো
+    // count of attendees
     return {
       Count: attendees.length,
       attendees: attendees,

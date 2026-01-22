@@ -11,7 +11,7 @@ export default function Header() {
   const { isLoggedIn, logout } = useAuth();
   const [userEmail, setUserEmail] = useState<string | null>(null);
 
-  // লগইন স্টেট চেঞ্জ হলে ইমেল আপডেট করা
+  
   useEffect(() => {
     if (isLoggedIn) {
       const email = localStorage.getItem('userEmail');
@@ -47,7 +47,7 @@ export default function Header() {
                   My Events
                 </Link>
 
-                {/* ইউজার ইমেল এবং প্রোফাইল আইকন */}
+                
                 <div className="flex items-center bg-blue-700 px-3 py-1 rounded-full border border-blue-500 space-x-2 ml-2">
                   <div className="w-6 h-6 bg-white text-blue-600 rounded-full flex items-center justify-center text-[10px] font-bold uppercase ring-2 ring-blue-400">
                     {userEmail ? userEmail.charAt(0) : 'U'}

@@ -3,7 +3,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import apiService from '../../utils/apiService'; // 👈 এটি ইমপোর্ট করুন
+import apiService from '../../utils/apiService'; 
 import AuthGuard from '../components/AuthGuard';
 
 interface Event {
@@ -28,7 +28,7 @@ export default function DashboardPage() {
   const router = useRouter();
 
   const fetchEvents = async (location = '', date = '') => {
-    // টোকেন চেক ক্লায়েন্ট সাইডে এখানে থাকুক UX-এর জন্য
+    
     const token = typeof window !== 'undefined' ? localStorage.getItem('userToken') : null;
     if (!token) {
       router.push('/');
@@ -38,18 +38,18 @@ export default function DashboardPage() {
     setLoading(true);
     try {
       let url = '/events';
-      // যদি সার্চ বা ফিল্টার থাকে তবে সার্চ API ব্যবহার করা হবে
+      
       if (location || date) {
         url = `/events/search?location=${location}&date=${date}`;
       }
 
-      // 👈 apiService ব্যবহার করে কল করুন, হেডার লাগবে না
+      
       const response = await apiService.get<Event[]>(url);
       setEvents(response.data);
       setError('');
     } catch (err: any) {
       setError('Failed to fetch events.');
-      // টোকেন মেয়াদ শেষ হলে লগআউট
+      
       if (err.response?.status === 401) {
         localStorage.removeItem('userToken'); 
         localStorage.removeItem('userEmail');
@@ -78,10 +78,10 @@ export default function DashboardPage() {
     }
 
     try {
-      // 👈 apiService ব্যবহার করে কল করুন, হেডার লাগবে না
+      
       await apiService.post('/bookings', { eventId });
       alert('Booking successful! Check your Mailtrap inbox for confirmation.');
-      fetchEvents(locationFilter, dateFilter); // বুকিং এর পর লিস্ট রিফ্রেশ করা
+      fetchEvents(locationFilter, dateFilter); 
     } catch (err: any) {
         alert(`Booking failed: ${err.response?.data?.message || 'Something went wrong.'}`);
     }
@@ -94,7 +94,7 @@ export default function DashboardPage() {
     <div className="p-8 max-w-7xl mx-auto">
       <h1 className="text-3xl font-bold mb-6 text-gray-800">Available Events</h1>
       
-      {/* সার্চ ফর্ম */}
+      
       <form onSubmit={handleSearch} className="mb-6 bg-white p-4 rounded-lg shadow-md flex gap-4">
         <input 
           type="text" 

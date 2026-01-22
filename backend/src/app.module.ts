@@ -19,7 +19,7 @@ import { EventsModule } from './events/events.module';
       autoLoadEntities: true,
       synchronize: true,
     }),
-    // 👈 MailerModule কনফিগারেশন যোগ করা হয়েছে
+    //mailer module configuration
     MailerModule.forRoot({
       transport: {
         host: process.env.MAIL_HOST,

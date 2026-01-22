@@ -6,7 +6,7 @@ import { useParams } from 'next/navigation';
 import apiService from '../../../utils/apiService';
 import AuthGuard from '../../components/AuthGuard';
 
-// ইন্টারফেস ব্যাকএন্ডের নতুন ফিল্ড 'bookedAt' সহ
+
 interface Attendee {
   bookingId: number;
   userName: string;
@@ -79,7 +79,7 @@ export default function AttendeeListPage() {
                       <p className="text-gray-600">{attendee.userEmail}</p>
                     </td>
                     <td className="px-5 py-5 border-b border-gray-200 text-sm text-gray-700">
-                      {/* তারিখ ও সময় ফরম্যাট: 22 Jan 2026, 03:20 PM */}
+                      {/* date and time format: 22 Jan 2026, 03:20 PM */}
                       {attendee.bookedAt ? (
                         new Date(attendee.bookedAt).toLocaleString('en-GB', {
                           day: '2-digit',

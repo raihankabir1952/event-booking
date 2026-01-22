@@ -28,22 +28,21 @@ interface RequestWithUser extends Request {
 export class EventsController {
   constructor(private readonly eventsService: EventsService) {}
 
-  // ১. GET /events (সব ইভেন্ট দেখা)
+  // GET /events 
   @UseGuards(JwtAuthGuard)
   @Get()
   getAllEvents() {
     return this.eventsService.findAll();
   }
 
-  // ২. GET /events/search (সার্চ করা)
+  // GET /events/search 
   @UseGuards(JwtAuthGuard)
   @Get('search')
   searchEvents(@Query() filterDto: FilterEventDto) {
     return this.eventsService.searchEvents(filterDto);
   }
 
-  // ৩. GET /events/:id/attendees (অর্গানাইজারের জন্য এটেন্ডি লিস্ট)
-  // এটি অবশ্যই ':id' এর উপরে রাখা ভালো অথবা এর নিচেও কাজ করবে কারণ এটি একটি সাব-রাউট।
+  // GET /events/:id/attendees
   @UseGuards(JwtAuthGuard)
   @Get(':id/attendees')
   getAttendees(
@@ -53,14 +52,14 @@ export class EventsController {
     return this.eventsService.getAttendeeList(id, req.user.id);
   }
 
-  // ৪. GET /events/:id (নির্দিষ্ট ইভেন্ট দেখা)
+  //GET /events/:id 
   @UseGuards(JwtAuthGuard)
   @Get(':id')
   getEventById(@Param('id', ParseIntPipe) id: number) {
     return this.eventsService.findById(id);
   }
 
-  // ৫. POST /events (নতুন ইভেন্ট তৈরি)
+  // POST /events
   @UseGuards(JwtAuthGuard)
   @Post()
   createEvent(
@@ -71,7 +70,7 @@ export class EventsController {
     return this.eventsService.create(createEventDto, user);
   }
 
-  // ৬. PATCH /events/:id (ইভেন্ট আপডেট)
+  // PATCH /events/:id 
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
   updateEvent(
@@ -81,7 +80,7 @@ export class EventsController {
     return this.eventsService.update(id, updateEventDto);
   }
 
-  // ৭. DELETE /events/:id (ইভেন্ট ডিলিট)
+  // DELETE /events/:id 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
   deleteEvent(@Param('id', ParseIntPipe) id: number) {
