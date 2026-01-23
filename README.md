@@ -69,6 +69,12 @@ All outgoing **"Booking Successful"** emails can be viewed directly in the Mailt
 ![Dashboard](screenshots/register.png)
 ### Dashboard page
 ![Dashboard](screenshots/dashboard.png)
+
+### My Events
+![Dashboard](screenshots/my_events.png)
+### users can download their ticket or scan qr code for details
+![Dashboard](screenshots/my_events2.png)
+
 ### My Bookings
 ![Dashboard](screenshots/my_bookings.png)
 ![Dashboard](screenshots/my_bookings2.png)
