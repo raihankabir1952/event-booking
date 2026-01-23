@@ -73,5 +73,15 @@ All outgoing **"Booking Successful"** emails can be viewed directly in the Mailt
 ![Dashboard](screenshots/my_bookings.png)
 ![Dashboard](screenshots/my_bookings2.png)
 
+### View Profile
+![Dashboard](screenshots/view_profile.png)
+
+### Set new Password
+![Dashboard](screenshots/forgot_password.png)
+![Dashboard](screenshots/pass_reset_link.png)
+
+![Dashboard](screenshots/set_new_pass.png)
+![Dashboard](screenshots/pass_reset_succ.png)
+
 ## 📌 Project Status
 Active development and testing (2026)
