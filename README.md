@@ -59,6 +59,13 @@ It allows the system to send booking confirmation emails safely without sending 
 All outgoing **"Booking Successful"** emails can be viewed directly in the Mailtrap dashboard.
 
 ---
+## 📸 Screenshots
+### Landing page
+![Dashboard](screenshots/landing.png)
+### Login page
+![Dashboard](screenshots/login.png)
+### Registration page
+![Dashboard](screenshots/register.png)
 
 ## 📌 Project Status
 Active development and testing (2026)
