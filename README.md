@@ -62,10 +62,16 @@ All outgoing **"Booking Successful"** emails can be viewed directly in the Mailt
 ## 📸 Screenshots
 ### Landing page
 ![Dashboard](screenshots/landing.png)
+
 ### Login page
 ![Dashboard](screenshots/login.png)
 ### Registration page
 ![Dashboard](screenshots/register.png)
+### Dashboard page
+![Dashboard](screenshots/dashboard.png)
+### My Bookings
+![Dashboard](screenshots/my_bookings.png)
+![Dashboard](screenshots/my_bookings2.png)
 
 ## 📌 Project Status
 Active development and testing (2026)
