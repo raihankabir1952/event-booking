@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { MailerModule } from '@nestjs-modules/mailer'; // 👈 এটি ইমপোর্ট করুন
+import { MailerModule } from '@nestjs-modules/mailer'; 
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { EventsModule } from './events/events.module';
@@ -17,7 +17,8 @@ import { EventsModule } from './events/events.module';
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       autoLoadEntities: true,
-      synchronize: true,
+      // synchronize: true,
+      synchronize: false,
     }),
     //mailer module configuration
     MailerModule.forRoot({
