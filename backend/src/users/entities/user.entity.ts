@@ -1,7 +1,10 @@
+
 // src/users/entities/user.entity.ts
 
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+
 import { Event } from 'src/events/entities/event.entity';
+
 import { Booking } from 'src/bookings/entities/booking.entity';
 
 @Entity()
@@ -18,8 +21,10 @@ export class User {
   @Column()
   name: string;
 
-  
-  @Column({ type: 'varchar', nullable: true }) 
+  @Column({ type: 'varchar', nullable: true })
+  profileImage: string | null;
+
+  @Column({ type: 'varchar', nullable: true })
   resetPasswordToken: string | null;
 
   @Column({ type: 'timestamp', nullable: true })
@@ -31,3 +36,4 @@ export class User {
   @OneToMany(() => Booking, (booking) => booking.user)
   bookings: Booking[];
 }
+

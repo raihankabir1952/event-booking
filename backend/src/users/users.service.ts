@@ -1,6 +1,10 @@
 // src/users/users.service.ts
 
-import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
@@ -26,7 +30,10 @@ export class UsersService {
   async create(createUserDto: CreateUserDto): Promise<User> {
     const { email, password, name } = createUserDto;
 
-    const existingUser = await this.usersRepository.findOne({ where: { email } });
+    const existingUser = await this.usersRepository.findOne({
+      where: { email },
+    });
+
     if (existingUser) {
       throw new ConflictException('Email already exists');
     }
@@ -44,36 +51,45 @@ export class UsersService {
 
   // Find user by ID
   async findById(id: number): Promise<User> {
-    const user = await this.usersRepository.findOne({ 
-      where: { id }, 
-      select: ['id', 'email', 'name'] 
+    const user = await this.usersRepository.findOne({
+      where: { id },
+      select: ['id', 'email', 'name', 'profileImage'],
     });
 
     if (!user) {
       throw new NotFoundException('User not found');
     }
+
     return user;
   }
 
   // Update user details
   async update(id: number, updateUserDto: UpdateUserDto) {
-    const user = await this.usersRepository.findOne({ where: { id } });
+    const user = await this.usersRepository.findOne({
+      where: { id },
+    });
 
     if (!user) {
       throw new NotFoundException('User not found');
     }
 
     if (updateUserDto.password) {
-      updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
+      updateUserDto.password = await bcrypt.hash(
+        updateUserDto.password,
+        10,
+      );
     }
 
     Object.assign(user, updateUserDto);
+
     return this.usersRepository.save(user);
   }
 
   // Delete user
   async remove(id: number) {
-    const user = await this.usersRepository.findOne({ where: { id } });
+    const user = await this.usersRepository.findOne({
+      where: { id },
+    });
 
     if (!user) {
       throw new NotFoundException('User not found');
@@ -93,24 +109,26 @@ export class UsersService {
 
   // Find by email (Used in Login and Forgot Password)
   async findOneByEmail(email: string): Promise<User | null> {
-    return this.usersRepository.findOne({ where: { email } });
+    return this.usersRepository.findOne({
+      where: { email },
+    });
   }
 
-  // --- পাসওয়ার্ড রিসেট ফিচারের জন্য নতুন মেথডসমূহ --- [১.১.১]
+  // --- Password Reset Feature ---
 
-  // ১. রিসেট টোকেন আপডেট করা
+  // Update reset token
   async updateResetToken(user: User): Promise<void> {
     await this.usersRepository.save(user);
   }
 
-  // ২. টোকেন দিয়ে ইউজারকে খুঁজে বের করা
+  // Find user by reset token
   async findByResetToken(token: string): Promise<User | null> {
     return this.usersRepository.findOne({
       where: { resetPasswordToken: token },
     });
   }
 
-  // ৩. পাসওয়ার্ড পরিবর্তনের পর সম্পূর্ণ ইউজার অবজেক্ট সেভ করা
+  // Save complete user object after password change
   async saveUser(user: User): Promise<User> {
     return this.usersRepository.save(user);
   }

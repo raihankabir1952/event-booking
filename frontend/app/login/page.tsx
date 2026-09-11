@@ -24,6 +24,7 @@ export default function LoginPage() {
         email,
         password,
       });
+      console.log("LOGIN RESPONSE:", response.data);
 
       const token = (response.data as any).access_token;
       login(token, email);
@@ -123,3 +124,4 @@ export default function LoginPage() {
     </div>
   );
 }
+

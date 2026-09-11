@@ -2,16 +2,16 @@ import { Injectable, UnauthorizedException, NotFoundException, BadRequestExcepti
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import * as crypto from 'crypto'; // টোকেন তৈরির জন্য
+import * as crypto from 'crypto'; // token
 import { LoginUserDto } from './dto/login-user.dto';
-import { MailerService } from '@nestjs-modules/mailer'; // মেইল পাঠানোর জন্য
+import { MailerService } from '@nestjs-modules/mailer'; // sending main
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
-    private mailerService: MailerService, // মেইলার ইনজেক্ট করুন
+    private mailerService: MailerService,
   ) {}
 
   async login(loginDto: LoginUserDto) {
@@ -28,19 +28,18 @@ export class AuthService {
     };
   }
 
-  // ১. Forgot Password লজিক
+  //Forgot Password
   async forgotPassword(email: string) {
     const user = await this.usersService.findOneByEmail(email);
     if (!user) throw new NotFoundException('User with this email does not exist');
 
-    // টোকেন তৈরি (র‍্যান্ডম স্ট্রিং)
+    
     const token = crypto.randomBytes(32).toString('hex');
     user.resetPasswordToken = token;
-    user.resetPasswordExpires = new Date(Date.now() + 3600000); // ১ ঘণ্টা মেয়াদ
+    user.resetPasswordExpires = new Date(Date.now() + 3600000); 
 
-    await this.usersService.updateResetToken(user); // ইউজার আপডেট করুন
+    await this.usersService.updateResetToken(user); 
 
-    // ইমেইল পাঠানো
     const resetUrl = `http://localhost:3000/reset-password?token=${token}`;
     
     await this.mailerService.sendMail({
@@ -54,7 +53,7 @@ export class AuthService {
     return { message: 'Reset link sent to email' };
   }
 
-  // ২. Reset Password লজিক
+  //Reset Password 
   async resetPassword(token: string, newPassword: string) {
     const user = await this.usersService.findByResetToken(token);
 
@@ -62,10 +61,10 @@ export class AuthService {
       throw new BadRequestException('Invalid or expired token');
     }
 
-    // পাসওয়ার্ড হ্যাশ করা এবং সেভ করা
+    // password hash and save
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     user.password = hashedPassword;
-    user.resetPasswordToken = null; // টোকেন ক্লিয়ার করা
+    user.resetPasswordToken = null; // token clear
     user.resetPasswordExpires = null;
 
     await this.usersService.saveUser(user);
