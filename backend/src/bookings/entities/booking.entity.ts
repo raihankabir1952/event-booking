@@ -1,5 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, ManyToOne, CreateDateColumn } from 'typeorm';
+
 import { Event } from 'src/events/entities/event.entity';
+
 import { User } from 'src/users/entities/user.entity';
 
 @Entity()
@@ -10,9 +12,11 @@ export class Booking {
   @ManyToOne(() => User, user => user.bookings)
   user: User;
 
-  @ManyToOne(() => Event, event => event.bookings)
+  @ManyToOne(() => Event, event => event.bookings, {
+    onDelete: 'CASCADE',
+  })
   event: Event;
 
-  @CreateDateColumn() 
+  @CreateDateColumn()
   createdAt: Date;
 }
