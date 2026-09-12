@@ -17,7 +17,7 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
-  ) {}
+  ) { }
 
   // Get all users
   async findAll() {
@@ -46,7 +46,14 @@ export class UsersService {
       name,
     });
 
-    return this.usersRepository.save(user);
+    const savedUser = await this.usersRepository.save(user);
+
+    return {
+      id: savedUser.id,
+      email: savedUser.email,
+      name: savedUser.name,
+      profileImage: savedUser.profileImage,
+    } as User;
   }
 
   // Find user by ID
@@ -107,11 +114,16 @@ export class UsersService {
     };
   }
 
-  // Find by email (Used in Login and Forgot Password)
+  // Find by email
+  // Used for Login and Forgot Password
   async findOneByEmail(email: string): Promise<User | null> {
-    return this.usersRepository.findOne({
-      where: { email },
-    });
+    return this.usersRepository
+      .createQueryBuilder('user')
+      .addSelect('user.password')
+      .addSelect('user.resetPasswordToken')
+      .addSelect('user.resetPasswordExpires')
+      .where('user.email = :email', { email })
+      .getOne();
   }
 
   // --- Password Reset Feature ---
@@ -123,9 +135,13 @@ export class UsersService {
 
   // Find user by reset token
   async findByResetToken(token: string): Promise<User | null> {
-    return this.usersRepository.findOne({
-      where: { resetPasswordToken: token },
-    });
+    return this.usersRepository
+      .createQueryBuilder('user')
+      .addSelect('user.password')
+      .addSelect('user.resetPasswordToken')
+      .addSelect('user.resetPasswordExpires')
+      .where('user.resetPasswordToken = :token', { token })
+      .getOne();
   }
 
   // Save complete user object after password change

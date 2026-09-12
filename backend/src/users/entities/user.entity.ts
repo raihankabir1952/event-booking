@@ -1,10 +1,13 @@
-
 // src/users/entities/user.entity.ts
 
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+} from 'typeorm';
 
 import { Event } from 'src/events/entities/event.entity';
-
 import { Booking } from 'src/bookings/entities/booking.entity';
 
 @Entity()
@@ -15,7 +18,7 @@ export class User {
   @Column({ unique: true })
   email: string;
 
-  @Column()
+  @Column({ select: false })
   password: string;
 
   @Column()
@@ -24,10 +27,18 @@ export class User {
   @Column({ type: 'varchar', nullable: true })
   profileImage: string | null;
 
-  @Column({ type: 'varchar', nullable: true })
+  @Column({
+    type: 'varchar',
+    nullable: true,
+    select: false,
+  })
   resetPasswordToken: string | null;
 
-  @Column({ type: 'timestamp', nullable: true })
+  @Column({
+    type: 'timestamp',
+    nullable: true,
+    select: false,
+  })
   resetPasswordExpires: Date | null;
 
   @OneToMany(() => Event, (event) => event.creator)
@@ -36,4 +47,3 @@ export class User {
   @OneToMany(() => Booking, (booking) => booking.user)
   bookings: Booking[];
 }
-
