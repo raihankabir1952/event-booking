@@ -162,25 +162,27 @@ export default function DashboardPage() {
 
   return (
     <AuthGuard>
-      <div className="min-h-screen bg-slate-50 px-4 py-8 md:px-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-900">
+      <div className="min-h-screen bg-slate-50 px-4 py-6 sm:px-6 sm:py-8 md:px-8">
+
+        {/* ================= HEADER ================= */}
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl font-bold leading-tight text-slate-900 sm:text-3xl">
             Explore Events 2026
           </h1>
 
-          <p className="mt-2 text-slate-600">
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600 sm:text-base">
             Discover and book the best events happening
             around you.
           </p>
         </div>
 
-        {/* Search Section */}
+        {/* ================= SEARCH SECTION ================= */}
         <form
           onSubmit={handleSearch}
-          className="mb-8 rounded-2xl bg-white p-5 shadow-sm"
+          className="mb-6 rounded-2xl bg-white p-4 shadow-sm sm:mb-8 sm:p-5"
         >
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-3">
+
             {/* Location */}
             <div className="relative">
               <MapPin
@@ -195,7 +197,7 @@ export default function DashboardPage() {
                 onChange={(e) =>
                   setLocationFilter(e.target.value)
                 }
-                className="w-full rounded-lg border border-slate-200 py-3 pl-10 pr-4 outline-none focus:border-purple-500"
+                className="w-full rounded-lg border border-slate-200 py-3 pl-10 pr-4 text-sm outline-none transition focus:border-purple-500 focus:ring-2 focus:ring-purple-100 sm:text-base"
               />
             </div>
 
@@ -212,14 +214,14 @@ export default function DashboardPage() {
                 onChange={(e) =>
                   setDateFilter(e.target.value)
                 }
-                className="w-full rounded-lg border border-slate-200 py-3 pl-10 pr-4 outline-none focus:border-purple-500"
+                className="w-full rounded-lg border border-slate-200 py-3 pl-10 pr-4 text-sm outline-none transition focus:border-purple-500 focus:ring-2 focus:ring-purple-100 sm:text-base"
               />
             </div>
 
             {/* Search Button */}
             <button
               type="submit"
-              className="flex items-center justify-center gap-2 rounded-lg bg-purple-600 px-5 py-3 font-semibold text-white transition hover:bg-purple-700"
+              className="flex min-h-[48px] items-center justify-center gap-2 rounded-lg bg-purple-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-purple-700 active:scale-[0.98] sm:text-base"
             >
               <Search size={20} />
               Search
@@ -227,32 +229,32 @@ export default function DashboardPage() {
           </div>
         </form>
 
-        {/* Loading */}
+        {/* ================= LOADING ================= */}
         {loading && (
-          <div className="flex items-center justify-center py-16">
+          <div className="flex min-h-[250px] items-center justify-center py-16">
             <RefreshCw
               size={28}
               className="animate-spin text-purple-600"
             />
 
-            <span className="ml-3 text-slate-600">
+            <span className="ml-3 text-sm text-slate-600 sm:text-base">
               Loading events...
             </span>
           </div>
         )}
 
-        {/* Error */}
+        {/* ================= ERROR ================= */}
         {!loading && error && (
-          <div className="rounded-xl bg-red-50 p-5 text-center text-red-600">
+          <div className="rounded-xl bg-red-50 p-5 text-center text-sm text-red-600 sm:text-base">
             {error}
           </div>
         )}
 
-        {/* Events */}
+        {/* ================= EVENTS ================= */}
         {!loading &&
           !error &&
           events.length > 0 && (
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 sm:gap-5 md:grid-cols-2 lg:grid-cols-3 lg:gap-6">
               {events.map((event) => {
                 const seatsLeft =
                   event.capacity - event.attendeeCount;
@@ -265,45 +267,50 @@ export default function DashboardPage() {
                 return (
                   <div
                     key={event.id}
-                    className="rounded-2xl bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+                    className="flex min-w-0 flex-col rounded-2xl bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg sm:p-6"
                   >
                     {/* Event Title */}
-                    <h2 className="mb-3 text-xl font-bold text-slate-900">
+                    <h2 className="mb-3 break-words text-lg font-bold leading-snug text-slate-900 sm:text-xl">
                       {event.title}
                     </h2>
 
                     {/* Description */}
-                    <p className="mb-5 line-clamp-3 text-sm text-slate-600">
+                    <p className="mb-5 line-clamp-3 text-sm leading-6 text-slate-600">
                       {event.description}
                     </p>
 
                     {/* Event Info */}
                     <div className="space-y-3 text-sm text-slate-600">
+
                       {/* Date */}
-                      <div className="flex items-center gap-2">
+                      <div className="flex min-w-0 items-start gap-2">
                         <Calendar
                           size={18}
-                          className="text-purple-600"
+                          className="mt-0.5 shrink-0 text-purple-600"
                         />
 
-                        <span>{event.date}</span>
+                        <span className="break-words">
+                          {event.date}
+                        </span>
                       </div>
 
                       {/* Location */}
-                      <div className="flex items-center gap-2">
+                      <div className="flex min-w-0 items-start gap-2">
                         <MapPin
                           size={18}
-                          className="text-purple-600"
+                          className="mt-0.5 shrink-0 text-purple-600"
                         />
 
-                        <span>{event.location}</span>
+                        <span className="break-words">
+                          {event.location}
+                        </span>
                       </div>
 
                       {/* Availability */}
                       <div className="flex items-center gap-2">
                         <Users
                           size={18}
-                          className="text-purple-600"
+                          className="shrink-0 text-purple-600"
                         />
 
                         {isFull ? (
@@ -318,7 +325,7 @@ export default function DashboardPage() {
                       </div>
 
                       {/* Price */}
-                      <div className="pt-2 text-lg font-bold text-slate-900">
+                      <div className="pt-2 text-lg font-bold text-slate-900 sm:text-xl">
                         {event.price} BDT
                       </div>
                     </div>
@@ -329,7 +336,7 @@ export default function DashboardPage() {
                         handleBooking(event.id)
                       }
                       disabled={isFull || isBooking}
-                      className={`mt-6 w-full rounded-lg px-4 py-3 font-semibold text-white transition ${
+                      className={`mt-6 min-h-[48px] w-full rounded-lg px-4 py-3 text-sm font-semibold text-white transition active:scale-[0.98] sm:text-base ${
                         isFull
                           ? 'cursor-not-allowed bg-slate-400'
                           : isBooking
@@ -349,12 +356,12 @@ export default function DashboardPage() {
             </div>
           )}
 
-        {/* No Events */}
+        {/* ================= NO EVENTS ================= */}
         {!loading &&
           !error &&
           events.length === 0 && (
-            <div className="rounded-xl bg-white p-10 text-center shadow-sm">
-              <p className="text-slate-600">
+            <div className="rounded-xl bg-white p-8 text-center shadow-sm sm:p-10">
+              <p className="text-sm text-slate-600 sm:text-base">
                 No events found matching your criteria.
               </p>
             </div>

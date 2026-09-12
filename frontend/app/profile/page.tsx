@@ -51,10 +51,16 @@ export default function ProfilePage() {
         localStorage.setItem('userName', user.name);
 
         if (user.profileImage) {
-          localStorage.setItem('profileImage', user.profileImage);
+          localStorage.setItem(
+            'profileImage',
+            user.profileImage,
+          );
         }
       } catch (error) {
-        console.error('Failed to fetch profile:', error);
+        console.error(
+          'Failed to fetch profile:',
+          error,
+        );
       }
     };
 
@@ -88,25 +94,37 @@ export default function ProfilePage() {
     try {
       setLoading(true);
 
-      const response = await apiService.patch<UpdateUserResponse>(
-        `/users/${userId}`,
-        {
-          name: newName.trim(),
-        },
-      );
+      const response =
+        await apiService.patch<UpdateUserResponse>(
+          `/users/${userId}`,
+          {
+            name: newName.trim(),
+          },
+        );
 
       const updatedName = response.data.name;
 
-      localStorage.setItem('userName', updatedName);
+      localStorage.setItem(
+        'userName',
+        updatedName,
+      );
 
       setUserName(updatedName);
       setNewName(updatedName);
       setIsEditing(false);
 
-      toast.success('Profile updated successfully!');
+      toast.success(
+        'Profile updated successfully!',
+      );
     } catch (error) {
-      console.error('Profile update error:', error);
-      toast.error('Failed to update profile.');
+      console.error(
+        'Profile update error:',
+        error,
+      );
+
+      toast.error(
+        'Failed to update profile.',
+      );
     } finally {
       setLoading(false);
     }
@@ -128,12 +146,16 @@ export default function ProfilePage() {
     }
 
     if (!file.type.startsWith('image/')) {
-      toast.error('Please select a valid image file.');
+      toast.error(
+        'Please select a valid image file.',
+      );
       return;
     }
 
     if (file.size > 5 * 1024 * 1024) {
-      toast.error('Image size must be less than 5MB.');
+      toast.error(
+        'Image size must be less than 5MB.',
+      );
       return;
     }
 
@@ -143,9 +165,11 @@ export default function ProfilePage() {
       const formData = new FormData();
 
       formData.append('file', file);
+
       formData.append(
         'upload_preset',
-        process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET as string,
+        process.env
+          .NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET as string,
       );
 
       const cloudinaryResponse = await fetch(
@@ -157,28 +181,46 @@ export default function ProfilePage() {
       );
 
       if (!cloudinaryResponse.ok) {
-        throw new Error('Cloudinary upload failed');
+        throw new Error(
+          'Cloudinary upload failed',
+        );
       }
 
-      const cloudinaryData = await cloudinaryResponse.json();
+      const cloudinaryData =
+        await cloudinaryResponse.json();
 
-      const imageUrl = cloudinaryData.secure_url;
+      const imageUrl =
+        cloudinaryData.secure_url;
 
       // Save image URL to database
-      await apiService.patch(`/users/${userId}`, {
-        profileImage: imageUrl,
-      });
+      await apiService.patch(
+        `/users/${userId}`,
+        {
+          profileImage: imageUrl,
+        },
+      );
 
       // Update UI
       setProfileImage(imageUrl);
 
       // Keep localStorage updated
-      localStorage.setItem('profileImage', imageUrl);
+      localStorage.setItem(
+        'profileImage',
+        imageUrl,
+      );
 
-      toast.success('Profile image updated successfully!');
+      toast.success(
+        'Profile image updated successfully!',
+      );
     } catch (error) {
-      console.error('Image upload error:', error);
-      toast.error('Failed to upload profile image.');
+      console.error(
+        'Image upload error:',
+        error,
+      );
+
+      toast.error(
+        'Failed to upload profile image.',
+      );
     } finally {
       setUploadingImage(false);
       event.target.value = '';
@@ -187,28 +229,36 @@ export default function ProfilePage() {
 
   return (
     <AuthGuard>
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
-        <div className="bg-white p-8 rounded-3xl shadow-xl max-w-md w-full border border-gray-100">
+      <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-6 sm:px-6 sm:py-8">
+
+        {/* ================= PROFILE CARD ================= */}
+        <div className="w-full max-w-md rounded-3xl border border-gray-100 bg-white p-5 shadow-xl sm:p-8">
+
           <div className="flex flex-col items-center">
 
-            {/* Profile Image */}
+            {/* ================= PROFILE IMAGE ================= */}
             <div className="relative mb-4">
+
               {profileImage ? (
                 <img
                   src={profileImage}
                   alt="Profile"
-                  className="w-24 h-24 rounded-full object-cover shadow-lg border-4 border-white"
+                  className="h-24 w-24 rounded-full border-4 border-white object-cover shadow-lg sm:h-28 sm:w-28"
                 />
               ) : (
-                <div className="w-24 h-24 bg-blue-600 text-white rounded-full flex items-center justify-center text-4xl font-bold shadow-lg">
-                  {userName ? userName.charAt(0).toUpperCase() : 'U'}
+                <div className="flex h-24 w-24 items-center justify-center rounded-full bg-blue-600 text-3xl font-bold text-white shadow-lg sm:h-28 sm:w-28 sm:text-4xl">
+                  {userName
+                    ? userName
+                        .charAt(0)
+                        .toUpperCase()
+                    : 'U'}
                 </div>
               )}
 
               {/* Change Image Button */}
               <label
                 htmlFor="profileImage"
-                className="absolute bottom-0 right-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center cursor-pointer hover:bg-blue-700 transition-all shadow-md"
+                className="absolute bottom-0 right-0 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-blue-600 text-lg font-bold text-white shadow-md transition-all hover:bg-blue-700 active:scale-95 sm:h-9 sm:w-9"
                 title="Change profile image"
               >
                 +
@@ -224,28 +274,28 @@ export default function ProfilePage() {
               />
             </div>
 
-            {/* Upload Status */}
+            {/* ================= UPLOAD STATUS ================= */}
             {uploadingImage && (
-              <p className="text-sm text-blue-600 font-medium mb-3">
+              <p className="mb-3 text-xs font-medium text-blue-600 sm:text-sm">
                 Uploading image...
               </p>
             )}
 
-            {/* Title */}
-            <h1 className="text-2xl font-bold text-gray-900 mb-1">
+            {/* ================= TITLE ================= */}
+            <h1 className="mb-1 text-2xl font-bold text-gray-900 sm:text-3xl">
               User Profile
             </h1>
 
-            <p className="text-gray-500 mb-6 text-sm">
+            <p className="mb-6 text-center text-xs text-gray-500 sm:text-sm">
               Manage your account information
             </p>
 
-            {/* User Information */}
-            <div className="w-full space-y-4">
+            {/* ================= USER INFORMATION ================= */}
+            <div className="w-full space-y-3 sm:space-y-4">
 
               {/* Name */}
-              <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100">
-                <p className="text-xs text-gray-400 uppercase font-bold mb-1">
+              <div className="rounded-2xl border border-gray-100 bg-gray-50 p-4">
+                <p className="mb-1 text-[11px] font-bold uppercase tracking-wide text-gray-400 sm:text-xs">
                   Full Name
                 </p>
 
@@ -253,68 +303,77 @@ export default function ProfilePage() {
                   <input
                     type="text"
                     value={newName}
-                    onChange={(e) => setNewName(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800"
+                    onChange={(e) =>
+                      setNewName(
+                        e.target.value,
+                      )
+                    }
+                    className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-800 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 sm:text-base"
                     placeholder="Enter your name"
                   />
                 ) : (
-                  <p className="text-gray-800 font-medium">
-                    {userName || 'Not Available'}
+                  <p className="break-words text-sm font-medium text-gray-800 sm:text-base">
+                    {userName ||
+                      'Not Available'}
                   </p>
                 )}
               </div>
 
               {/* Email */}
-              <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100">
-                <p className="text-xs text-gray-400 uppercase font-bold mb-1">
+              <div className="rounded-2xl border border-gray-100 bg-gray-50 p-4">
+                <p className="mb-1 text-[11px] font-bold uppercase tracking-wide text-gray-400 sm:text-xs">
                   Email Address
                 </p>
 
-                <p className="text-gray-800 font-medium">
-                  {userEmail || 'Not Available'}
+                <p className="break-all text-sm font-medium text-gray-800 sm:text-base">
+                  {userEmail ||
+                    'Not Available'}
                 </p>
               </div>
 
               {/* Account Status */}
-              <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100">
-                <p className="text-xs text-gray-400 uppercase font-bold mb-1">
+              <div className="rounded-2xl border border-gray-100 bg-gray-50 p-4">
+                <p className="mb-1 text-[11px] font-bold uppercase tracking-wide text-gray-400 sm:text-xs">
                   Account Status
                 </p>
 
-                <p className="text-green-600 font-bold flex items-center gap-2">
-                  <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                <p className="flex items-center gap-2 text-sm font-bold text-green-600 sm:text-base">
+                  <span className="h-2 w-2 shrink-0 rounded-full bg-green-500" />
                   Active User
                 </p>
               </div>
             </div>
 
-            {/* Edit / Save Buttons */}
+            {/* ================= EDIT / SAVE ================= */}
             {!isEditing ? (
               <button
                 onClick={handleEdit}
-                className="mt-8 w-full py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-all shadow-md active:scale-95"
+                className="mt-6 min-h-[48px] w-full rounded-xl bg-blue-600 py-3 text-sm font-bold text-white shadow-md transition-all hover:bg-blue-700 active:scale-[0.98] sm:mt-8 sm:text-base"
               >
                 Edit Profile
               </button>
             ) : (
-              <div className="mt-8 w-full flex gap-3">
+              <div className="mt-6 flex w-full flex-col gap-3 sm:mt-8 sm:flex-row">
 
+                {/* Cancel */}
                 <button
                   onClick={handleCancel}
                   disabled={loading}
-                  className="w-1/2 py-3 bg-gray-200 text-gray-700 font-bold rounded-xl hover:bg-gray-300 transition-all active:scale-95 disabled:opacity-50"
+                  className="min-h-[48px] w-full rounded-xl bg-gray-200 py-3 text-sm font-bold text-gray-700 transition-all hover:bg-gray-300 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 sm:w-1/2 sm:text-base"
                 >
                   Cancel
                 </button>
 
+                {/* Save */}
                 <button
                   onClick={handleSave}
                   disabled={loading}
-                  className="w-1/2 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-all shadow-md active:scale-95 disabled:opacity-50"
+                  className="min-h-[48px] w-full rounded-xl bg-blue-600 py-3 text-sm font-bold text-white shadow-md transition-all hover:bg-blue-700 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 sm:w-1/2 sm:text-base"
                 >
-                  {loading ? 'Saving...' : 'Save Changes'}
+                  {loading
+                    ? 'Saving...'
+                    : 'Save Changes'}
                 </button>
-
               </div>
             )}
           </div>
