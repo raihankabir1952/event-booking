@@ -26,13 +26,25 @@ interface Event {
   };
 }
 
+interface BookingResponse {
+  id: number;
+  paymentStatus: string;
+  transactionId: string | null;
+}
+
+interface PaymentResponse {
+  GatewayPageURL: string;
+}
+
 export default function DashboardPage() {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [locationFilter, setLocationFilter] = useState('');
   const [dateFilter, setDateFilter] = useState('');
-  const [bookingLoading, setBookingLoading] = useState<number | null>(null);
+  const [bookingLoading, setBookingLoading] = useState<number | null>(
+    null,
+  );
 
   const router = useRouter();
 
@@ -94,24 +106,26 @@ export default function DashboardPage() {
       setBookingLoading(eventId);
 
       // Step 1: Create booking
-      const bookingResponse = await apiService.post(
-        '/bookings',
-        {
-          eventId,
-        },
-      );
+      const bookingResponse =
+        await apiService.post<BookingResponse>(
+          '/bookings',
+          {
+            eventId,
+          },
+        );
 
       const bookingId = bookingResponse.data.id;
 
       console.log('Booking created:', bookingId);
 
       // Step 2: Initiate SSLCommerz payment
-      const paymentResponse = await apiService.post(
-        '/payments/initiate',
-        {
-          bookingId,
-        },
-      );
+      const paymentResponse =
+        await apiService.post<PaymentResponse>(
+          '/payments/initiate',
+          {
+            bookingId,
+          },
+        );
 
       console.log(
         'Payment Initiation Response:',
@@ -128,7 +142,7 @@ export default function DashboardPage() {
         );
       }
 
-      // Step 4: Redirect user to SSLCommerz
+      // Step 4: Redirect to SSLCommerz
       window.location.href = paymentUrl;
     } catch (err: any) {
       console.error(
@@ -152,11 +166,12 @@ export default function DashboardPage() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-slate-900">
-            Discover Events
+            Explore Events 2026
           </h1>
 
           <p className="mt-2 text-slate-600">
-            Find and book your favorite events.
+            Discover and book the best events happening
+            around you.
           </p>
         </div>
 
@@ -264,22 +279,27 @@ export default function DashboardPage() {
 
                     {/* Event Info */}
                     <div className="space-y-3 text-sm text-slate-600">
+                      {/* Date */}
                       <div className="flex items-center gap-2">
                         <Calendar
                           size={18}
                           className="text-purple-600"
                         />
+
                         <span>{event.date}</span>
                       </div>
 
+                      {/* Location */}
                       <div className="flex items-center gap-2">
                         <MapPin
                           size={18}
                           className="text-purple-600"
                         />
+
                         <span>{event.location}</span>
                       </div>
 
+                      {/* Availability */}
                       <div className="flex items-center gap-2">
                         <Users
                           size={18}
