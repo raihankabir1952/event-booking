@@ -63,7 +63,9 @@ export class PaymentsController {
       );
 
       // Payment successfully validated
-      if (validationResult.status === 'VALIDATED') {
+      if (validationResult.status === 'VALIDATED' ||
+         validationResult.status === 'VALIDATED'
+      ) {
         return res.send(`
           <!DOCTYPE html>
           <html>
