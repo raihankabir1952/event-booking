@@ -1,4 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, ManyToOne, CreateDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  CreateDateColumn,
+  Column,
+} from 'typeorm';
 
 import { Event } from 'src/events/entities/event.entity';
 
@@ -16,6 +22,17 @@ export class Booking {
     onDelete: 'CASCADE',
   })
   event: Event;
+
+  @Column({
+    default: 'PENDING',
+  })
+  paymentStatus: string;
+
+  @Column({
+    nullable: true,
+    type: 'varchar',
+  })
+  transactionId: string | null;
 
   @CreateDateColumn()
   createdAt: Date;
