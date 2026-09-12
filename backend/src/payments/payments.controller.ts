@@ -8,7 +8,6 @@ import {
 } from '@nestjs/common';
 
 import { PaymentsService } from './payments.service';
-
 import type { Response } from 'express';
 
 @Controller('payments')
@@ -17,9 +16,9 @@ export class PaymentsController {
     private readonly paymentsService: PaymentsService,
   ) {}
 
-  // =========================
-  // Start Payment
-  // =========================
+  // ==============================
+  // INITIATE PAYMENT
+  // ==============================
   @Post('initiate')
   initiatePayment(
     @Body('bookingId') bookingId: number,
@@ -29,9 +28,9 @@ export class PaymentsController {
     );
   }
 
-  // =========================
-  // Payment Success - GET
-  // =========================
+  // ==============================
+  // PAYMENT SUCCESS - GET
+  // ==============================
   @Get('success')
   async paymentSuccessGet(
     @Query() query: any,
@@ -44,9 +43,9 @@ export class PaymentsController {
 
     const valId = query.val_id;
 
-    // If SSLCOMMERZ sends val_id
     if (valId) {
       try {
+        // Validate payment with SSLCommerz
         const validationResult =
           await this.paymentsService.validatePayment(
             valId,
@@ -57,57 +56,43 @@ export class PaymentsController {
           validationResult,
         );
 
+        // Check payment status
         if (
           validationResult.status === 'VALID' ||
           validationResult.status === 'VALIDATED'
         ) {
+          // Mark booking as PAID
           const booking =
             await this.paymentsService.completePayment(
               validationResult.tran_id,
               Number(validationResult.amount),
             );
 
-          return res.send(`
-            <!DOCTYPE html>
-            <html>
-              <head>
-                <title>Payment Successful</title>
-              </head>
+          console.log(
+            'Payment completed successfully:',
+            booking.id,
+          );
 
-              <body>
-                <h1>Payment Successful ✅</h1>
-
-                <p>
-                  <strong>Booking ID:</strong>
-                  ${booking.id}
-                </p>
-
-                <p>
-                  <strong>Transaction ID:</strong>
-                  ${validationResult.tran_id}
-                </p>
-
-                <p>
-                  <strong>Amount:</strong>
-                  ${validationResult.amount} BDT
-                </p>
-
-                <p>
-                  <strong>Payment Status:</strong>
-                  PAID
-                </p>
-
-                <p>
-                  Confirmation email has been sent.
-                </p>
-              </body>
-            </html>
-          `);
+          // Redirect to frontend success page
+          return res.redirect(
+            'https://event-booking-1opb.vercel.app/payment/success',
+          );
         }
 
         return res.status(400).send(`
-          <h1>Payment Validation Failed ❌</h1>
-          <p>Status: ${validationResult.status}</p>
+          <!DOCTYPE html>
+          <html>
+            <head>
+              <title>Payment Validation Failed</title>
+            </head>
+
+            <body>
+              <h1>Payment Validation Failed ❌</h1>
+              <p>
+                Status: ${validationResult.status}
+              </p>
+            </body>
+          </html>
         `);
       } catch (error) {
         console.error(
@@ -116,38 +101,43 @@ export class PaymentsController {
         );
 
         return res.status(500).send(`
-          <h1>Payment Processing Error ❌</h1>
-          <p>Unable to process payment.</p>
+          <!DOCTYPE html>
+          <html>
+            <head>
+              <title>Payment Error</title>
+            </head>
+
+            <body>
+              <h1>Payment Processing Error ❌</h1>
+              <p>
+                Unable to process payment.
+              </p>
+            </body>
+          </html>
         `);
       }
     }
 
-    // No val_id received
-    return res.send(`
+    return res.status(400).send(`
       <!DOCTYPE html>
       <html>
         <head>
-          <title>Payment Received</title>
+          <title>Payment Error</title>
         </head>
 
         <body>
-          <h1>Payment Received ✅</h1>
-
+          <h1>Payment Error ❌</h1>
           <p>
-            Your payment request was received.
-          </p>
-
-          <p>
-            Payment verification is being processed.
+            Validation ID was not received.
           </p>
         </body>
       </html>
     `);
   }
 
-  // =========================
-  // Payment Success - POST
-  // =========================
+  // ==============================
+  // PAYMENT SUCCESS - POST
+  // ==============================
   @Post('success')
   async paymentSuccessPost(
     @Body() paymentData: any,
@@ -188,42 +178,14 @@ export class PaymentsController {
             Number(validationResult.amount),
           );
 
-        return res.send(`
-          <!DOCTYPE html>
-          <html>
-            <head>
-              <title>Payment Successful</title>
-            </head>
+        console.log(
+          'Payment completed successfully:',
+          booking.id,
+        );
 
-            <body>
-              <h1>Payment Successful ✅</h1>
-
-              <p>
-                <strong>Booking ID:</strong>
-                ${booking.id}
-              </p>
-
-              <p>
-                <strong>Transaction ID:</strong>
-                ${validationResult.tran_id}
-              </p>
-
-              <p>
-                <strong>Amount:</strong>
-                ${validationResult.amount} BDT
-              </p>
-
-              <p>
-                <strong>Payment Status:</strong>
-                PAID
-              </p>
-
-              <p>
-                Confirmation email has been sent.
-              </p>
-            </body>
-          </html>
-        `);
+        return res.redirect(
+          'https://event-booking-1opb.vercel.app/payment/success',
+        );
       }
 
       return res.status(400).send(`
@@ -243,9 +205,9 @@ export class PaymentsController {
     }
   }
 
-  // =========================
+  // ==============================
   // IPN
-  // =========================
+  // ==============================
   @Post('ipn')
   async paymentIPN(
     @Body() paymentData: any,
@@ -316,9 +278,9 @@ export class PaymentsController {
     }
   }
 
-  // =========================
-  // Payment Failed
-  // =========================
+  // ==============================
+  // PAYMENT FAIL - GET
+  // ==============================
   @Get('fail')
   paymentFail(
     @Query() query: any,
@@ -330,11 +292,25 @@ export class PaymentsController {
     );
 
     return res.send(`
-      <h1>Payment Failed ❌</h1>
-      <p>Your payment was not completed.</p>
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Payment Failed</title>
+        </head>
+
+        <body>
+          <h1>Payment Failed ❌</h1>
+          <p>
+            Your payment was not completed.
+          </p>
+        </body>
+      </html>
     `);
   }
 
+  // ==============================
+  // PAYMENT FAIL - POST
+  // ==============================
   @Post('fail')
   paymentFailPost(
     @Body() paymentData: any,
@@ -346,14 +322,25 @@ export class PaymentsController {
     );
 
     return res.send(`
-      <h1>Payment Failed ❌</h1>
-      <p>Your payment was not completed.</p>
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Payment Failed</title>
+        </head>
+
+        <body>
+          <h1>Payment Failed ❌</h1>
+          <p>
+            Your payment was not completed.
+          </p>
+        </body>
+      </html>
     `);
   }
 
-  // =========================
-  // Payment Cancelled
-  // =========================
+  // ==============================
+  // PAYMENT CANCEL - GET
+  // ==============================
   @Get('cancel')
   paymentCancel(
     @Query() query: any,
@@ -365,11 +352,25 @@ export class PaymentsController {
     );
 
     return res.send(`
-      <h1>Payment Cancelled ⚠️</h1>
-      <p>You cancelled the payment.</p>
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Payment Cancelled</title>
+        </head>
+
+        <body>
+          <h1>Payment Cancelled ⚠️</h1>
+          <p>
+            You cancelled the payment.
+          </p>
+        </body>
+      </html>
     `);
   }
 
+  // ==============================
+  // PAYMENT CANCEL - POST
+  // ==============================
   @Post('cancel')
   paymentCancelPost(
     @Body() paymentData: any,
@@ -381,14 +382,25 @@ export class PaymentsController {
     );
 
     return res.send(`
-      <h1>Payment Cancelled ⚠️</h1>
-      <p>You cancelled the payment.</p>
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Payment Cancelled</title>
+        </head>
+
+        <body>
+          <h1>Payment Cancelled ⚠️</h1>
+          <p>
+            You cancelled the payment.
+          </p>
+        </body>
+      </html>
     `);
   }
 
-  // =========================
-  // Temporary Validation Test
-  // =========================
+  // ==============================
+  // TEST VALIDATION
+  // ==============================
   @Get('validate')
   validatePayment() {
     return this.paymentsService.validatePayment(
