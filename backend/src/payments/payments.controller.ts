@@ -12,7 +12,9 @@ import type { Response } from 'express';
 
 @Controller('payments')
 export class PaymentsController {
-  constructor(private readonly paymentsService: PaymentsService) {}
+  constructor(
+    private readonly paymentsService: PaymentsService,
+  ) {}
 
   // Start Payment
   @Post('initiate')
@@ -26,7 +28,10 @@ export class PaymentsController {
     @Query() query: any,
     @Res() res: Response,
   ) {
-    console.log('Payment Success GET Query:', query);
+    console.log(
+      'Payment Success GET Query:',
+      query,
+    );
 
     return res.send(`
       <h1>Payment Successful</h1>
@@ -40,7 +45,10 @@ export class PaymentsController {
     @Body() paymentData: any,
     @Res() res: Response,
   ) {
-    console.log('Payment Success POST Data:', paymentData);
+    console.log(
+      'Payment Success POST Data:',
+      paymentData,
+    );
 
     const valId = paymentData.val_id;
 
@@ -55,7 +63,9 @@ export class PaymentsController {
     try {
       // Validate payment directly with SSLCOMMERZ
       const validationResult =
-        await this.paymentsService.validatePayment(valId);
+        await this.paymentsService.validatePayment(
+          valId,
+        );
 
       console.log(
         'SSLCOMMERZ Validation Result:',
@@ -63,8 +73,9 @@ export class PaymentsController {
       );
 
       // Payment successfully validated
-      if (validationResult.status === 'VALIDATED' ||
-         validationResult.status === 'VALIDATED'
+      if (
+        validationResult.status === 'VALID' ||
+        validationResult.status === 'VALIDATED'
       ) {
         return res.send(`
           <!DOCTYPE html>
@@ -117,6 +128,8 @@ export class PaymentsController {
   // Temporary validation test endpoint
   @Get('validate')
   validatePayment() {
-    return this.paymentsService.validatePayment('TEST_VAL_ID');
+    return this.paymentsService.validatePayment(
+      'TEST_VAL_ID',
+    );
   }
 }
