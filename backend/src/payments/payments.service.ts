@@ -1,12 +1,20 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
+
 import axios from 'axios';
 
 @Injectable()
 export class PaymentsService {
+  // =========================================
+  // Initiate SSLCOMMERZ Payment
+  // =========================================
   async initiatePayment() {
     try {
       const storeId = process.env.SSLCOMMERZ_STORE_ID;
-      const storePassword = process.env.SSLCOMMERZ_STORE_PASSWORD;
+      const storePassword =
+        process.env.SSLCOMMERZ_STORE_PASSWORD;
       const apiUrl = process.env.SSLCOMMERZ_API_URL;
 
       const transactionId = `TXN_${Date.now()}`;
@@ -14,8 +22,10 @@ export class PaymentsService {
       const paymentData = {
         store_id: storeId,
         store_passwd: storePassword,
+
         total_amount: 100,
         currency: 'BDT',
+
         tran_id: transactionId,
 
         success_url:
@@ -41,15 +51,28 @@ export class PaymentsService {
         shipping_method: 'NO',
       };
 
-      const response = await axios.post(apiUrl!, paymentData, {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
+      const response = await axios.post(
+        apiUrl!,
+        paymentData,
+        {
+          headers: {
+            'Content-Type':
+              'application/x-www-form-urlencoded',
+          },
         },
-      });
+      );
+
+      console.log(
+        'SSLCOMMERZ Initiate Response:',
+        response.data,
+      );
 
       return response.data;
     } catch (error) {
-      console.error('SSLCOMMERZ Payment Error:', error);
+      console.error(
+        'SSLCOMMERZ Payment Error:',
+        error,
+      );
 
       throw new InternalServerErrorException(
         'Unable to initiate payment',
@@ -57,10 +80,40 @@ export class PaymentsService {
     }
   }
 
+  // =========================================
+  // Validate SSLCOMMERZ Payment
+  // =========================================
   async validatePayment(valId: string) {
     try {
       const storeId = process.env.SSLCOMMERZ_STORE_ID;
-      const storePassword = process.env.SSLCOMMERZ_STORE_PASSWORD;
+
+      const storePassword =
+        process.env.SSLCOMMERZ_STORE_PASSWORD;
+
+      console.log(
+        'Validating SSLCOMMERZ Payment...',
+      );
+
+      console.log(
+        'Validation ID:',
+        valId,
+      );
+
+      console.log(
+        'Store ID exists:',
+        !!storeId,
+      );
+
+      console.log(
+        'Store Password exists:',
+        !!storePassword,
+      );
+
+      // Give SSLCOMMERZ Sandbox some time
+      // to finalize the transaction.
+      await new Promise((resolve) =>
+        setTimeout(resolve, 5000),
+      );
 
       const response = await axios.get(
         'https://sandbox.sslcommerz.com/validator/api/validationserverAPI.php',
@@ -72,14 +125,22 @@ export class PaymentsService {
             v: 1,
             format: 'json',
           },
+
+          timeout: 15000,
         },
       );
 
-      console.log('Payment Validation Response:', response.data);
+      console.log(
+        'Payment Validation Response:',
+        response.data,
+      );
 
       return response.data;
     } catch (error) {
-      console.error('Payment Validation Error:', error);
+      console.error(
+        'Payment Validation Error:',
+        error,
+      );
 
       throw new InternalServerErrorException(
         'Unable to validate payment',
