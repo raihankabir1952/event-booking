@@ -5,6 +5,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { EventsModule } from './events/events.module';
+import { PaymentsModule } from './payments/payments.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { EventsModule } from './events/events.module';
     UsersModule,
     AuthModule,
     EventsModule,
+    PaymentsModule,
   ],
 })
 export class AppModule {}
