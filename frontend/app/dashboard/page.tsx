@@ -26,6 +26,13 @@ interface Event {
   };
 }
 
+interface MyBooking {
+  id: number;
+  event: {
+    id: number;
+  };
+}
+
 interface BookingResponse {
   id: number;
   paymentStatus: string;
@@ -73,9 +80,27 @@ export default function DashboardPage() {
         )}&date=${encodeURIComponent(date)}`;
       }
 
-      const response = await apiService.get<Event[]>(url);
+      // Fetch events and user's bookings together
+      const [eventsResponse, bookingsResponse] =
+        await Promise.all([
+          apiService.get<Event[]>(url),
+          apiService.get<MyBooking[]>('/bookings/my'),
+        ]);
 
-      setEvents(response.data);
+      // Get IDs of events already booked by the current user
+      const bookedEventIds = new Set(
+        bookingsResponse.data.map(
+          (booking) => booking.event.id,
+        ),
+      );
+
+      // Remove already booked events from dashboard
+      const availableEvents =
+        eventsResponse.data.filter(
+          (event) => !bookedEventIds.has(event.id),
+        );
+
+      setEvents(availableEvents);
       setError('');
     } catch (err: any) {
       console.error('Fetch Events Error:', err);
