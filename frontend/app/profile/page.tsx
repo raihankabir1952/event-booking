@@ -5,6 +5,15 @@ import AuthGuard from '../components/AuthGuard';
 import apiService from '../../utils/apiService';
 import { toast } from 'react-toastify';
 
+interface UserProfile {
+  name: string;
+  profileImage?: string | null;
+}
+
+interface UpdateUserResponse {
+  name: string;
+}
+
 export default function ProfilePage() {
   const [userName, setUserName] = useState<string | null>('');
   const [userEmail, setUserEmail] = useState<string | null>('');
@@ -28,7 +37,9 @@ export default function ProfilePage() {
       if (!storedUserId) return;
 
       try {
-        const response = await apiService.get(`/users/${storedUserId}`);
+        const response = await apiService.get<UserProfile>(
+          `/users/${storedUserId}`,
+        );
 
         const user = response.data;
 
@@ -77,9 +88,12 @@ export default function ProfilePage() {
     try {
       setLoading(true);
 
-      const response = await apiService.patch(`/users/${userId}`, {
-        name: newName.trim(),
-      });
+      const response = await apiService.patch<UpdateUserResponse>(
+        `/users/${userId}`,
+        {
+          name: newName.trim(),
+        },
+      );
 
       const updatedName = response.data.name;
 
@@ -187,9 +201,7 @@ export default function ProfilePage() {
                 />
               ) : (
                 <div className="w-24 h-24 bg-blue-600 text-white rounded-full flex items-center justify-center text-4xl font-bold shadow-lg">
-                  {userName
-                    ? userName.charAt(0).toUpperCase()
-                    : 'U'}
+                  {userName ? userName.charAt(0).toUpperCase() : 'U'}
                 </div>
               )}
 
