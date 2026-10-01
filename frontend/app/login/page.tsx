@@ -12,13 +12,18 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const { login } = useAuth();
   const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (loading) return;
+
     setError('');
+    setLoading(true);
 
     try {
       const response = await apiService.post('/auth/login', {
@@ -36,6 +41,7 @@ export default function LoginPage() {
       router.push('/dashboard');
     } catch (err: any) {
       setError('Login failed. Check email and password.');
+      setLoading(false);
     }
   };
 
@@ -95,7 +101,8 @@ export default function LoginPage() {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="min-h-[48px] w-full rounded-lg border border-white/20 bg-white/10 p-3 text-sm text-white outline-none transition focus:ring-2 focus:ring-blue-500 sm:text-base"
+            disabled={loading}
+            className="min-h-[48px] w-full rounded-lg border border-white/20 bg-white/10 p-3 text-sm text-white outline-none transition focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-60 sm:text-base"
             placeholder="Enter your email"
             required
           />
@@ -111,7 +118,8 @@ export default function LoginPage() {
             type={showPassword ? 'text' : 'password'}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="min-h-[48px] w-full rounded-lg border border-white/20 bg-white/10 p-3 pr-12 text-sm text-white outline-none transition focus:ring-2 focus:ring-blue-500 sm:text-base"
+            disabled={loading}
+            className="min-h-[48px] w-full rounded-lg border border-white/20 bg-white/10 p-3 pr-12 text-sm text-white outline-none transition focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-60 sm:text-base"
             placeholder="Enter your password"
             required
           />
@@ -120,7 +128,8 @@ export default function LoginPage() {
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-[37px] flex h-8 w-8 items-center justify-center text-gray-400 transition-colors hover:text-white"
+            disabled={loading}
+            className="absolute right-3 top-[37px] flex h-8 w-8 items-center justify-center text-gray-400 transition-colors hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
             aria-label={
               showPassword
                 ? 'Hide password'
@@ -171,7 +180,9 @@ export default function LoginPage() {
           <Link
             href="/forgot-password"
             title="Reset your password"
-            className="text-xs text-blue-400 hover:underline sm:text-sm"
+            className={`text-xs text-blue-400 hover:underline sm:text-sm ${
+              loading ? 'pointer-events-none opacity-50' : ''
+            }`}
           >
             Forgot Password?
           </Link>
@@ -180,9 +191,37 @@ export default function LoginPage() {
         {/* Login Button */}
         <button
           type="submit"
-          className="min-h-[48px] w-full rounded-lg bg-blue-600 p-3 text-sm font-bold text-white shadow-lg transition duration-300 hover:bg-blue-700 active:scale-[0.98] sm:text-base"
+          disabled={loading}
+          className="flex min-h-[48px] w-full items-center justify-center gap-2 rounded-lg bg-blue-600 p-3 text-sm font-bold text-white shadow-lg transition duration-300 hover:bg-blue-700 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-70 sm:text-base"
         >
-          Login
+          {loading ? (
+            <>
+              <svg
+                className="h-5 w-5 animate-spin"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                />
+              </svg>
+
+              Logging in...
+            </>
+          ) : (
+            'Login'
+          )}
         </button>
 
         {/* Register */}
@@ -190,7 +229,9 @@ export default function LoginPage() {
           Don't have an account?{' '}
           <Link
             href="/register"
-            className="font-semibold text-blue-400 hover:underline"
+            className={`font-semibold text-blue-400 hover:underline ${
+              loading ? 'pointer-events-none opacity-50' : ''
+            }`}
           >
             Register now
           </Link>
