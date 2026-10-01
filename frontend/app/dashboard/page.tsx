@@ -80,21 +80,18 @@ export default function DashboardPage() {
         )}&date=${encodeURIComponent(date)}`;
       }
 
-      // Fetch events and user's bookings together
       const [eventsResponse, bookingsResponse] =
         await Promise.all([
           apiService.get<Event[]>(url),
           apiService.get<MyBooking[]>('/bookings/my'),
         ]);
 
-      // Get IDs of events already booked by the current user
       const bookedEventIds = new Set(
         bookingsResponse.data.map(
           (booking) => booking.event.id,
         ),
       );
 
-      // Remove already booked events from dashboard
       const availableEvents =
         eventsResponse.data.filter(
           (event) => !bookedEventIds.has(event.id),
@@ -190,8 +187,16 @@ export default function DashboardPage() {
       <div className="min-h-screen bg-slate-50 px-4 py-6 sm:px-6 sm:py-8 md:px-8">
 
         {/* ================= HEADER ================= */}
-        <div className="mb-6 sm:mb-8">
-          <h1 className="text-2xl font-bold leading-tight text-slate-900 sm:text-3xl">
+        <div className="mx-auto mb-7 max-w-7xl sm:mb-9">
+          <div className="mb-2 flex items-center gap-2">
+            <div className="h-2 w-2 rounded-full bg-purple-600" />
+
+            <span className="text-xs font-semibold uppercase tracking-wider text-purple-600 sm:text-sm">
+              Event Discovery
+            </span>
+          </div>
+
+          <h1 className="text-2xl font-extrabold leading-tight text-slate-900 sm:text-3xl lg:text-4xl">
             Explore Events 2026
           </h1>
 
@@ -202,76 +207,107 @@ export default function DashboardPage() {
         </div>
 
         {/* ================= SEARCH SECTION ================= */}
-        <form
-          onSubmit={handleSearch}
-          className="mb-6 rounded-2xl bg-white p-4 shadow-sm sm:mb-8 sm:p-5"
-        >
-          <div className="grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-3">
+        <div className="mx-auto max-w-7xl">
+          <form
+            onSubmit={handleSearch}
+            className="mb-7 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:mb-9 sm:p-5 lg:p-6"
+          >
+            <div className="mb-4">
+              <h2 className="text-base font-bold text-slate-900 sm:text-lg">
+                Find your next event
+              </h2>
 
-            {/* Location */}
-            <div className="relative">
-              <MapPin
-                size={20}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-              />
-
-              <input
-                type="text"
-                placeholder="Search by location"
-                value={locationFilter}
-                onChange={(e) =>
-                  setLocationFilter(e.target.value)
-                }
-                className="w-full rounded-lg border border-slate-200 py-3 pl-10 pr-4 text-sm outline-none transition focus:border-purple-500 focus:ring-2 focus:ring-purple-100 sm:text-base"
-              />
+              <p className="mt-1 text-xs text-slate-500 sm:text-sm">
+                Search events by location or date.
+              </p>
             </div>
 
-            {/* Date */}
-            <div className="relative">
-              <Calendar
-                size={20}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-              />
+            <div className="grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-3">
 
-              <input
-                type="date"
-                value={dateFilter}
-                onChange={(e) =>
-                  setDateFilter(e.target.value)
-                }
-                className="w-full rounded-lg border border-slate-200 py-3 pl-10 pr-4 text-sm outline-none transition focus:border-purple-500 focus:ring-2 focus:ring-purple-100 sm:text-base"
-              />
+              {/* Location */}
+              <div className="relative">
+                <MapPin
+                  size={19}
+                  className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                />
+
+                <input
+                  type="text"
+                  placeholder="Search by location"
+                  value={locationFilter}
+                  onChange={(e) =>
+                    setLocationFilter(e.target.value)
+                  }
+                  className="min-h-[48px] w-full rounded-xl border border-slate-200 bg-slate-50 py-3 pl-10 pr-4 text-sm font-medium text-slate-900 placeholder:text-slate-400 outline-none transition-all duration-200 hover:border-slate-300 focus:border-purple-500 focus:bg-white focus:ring-4 focus:ring-purple-100 sm:text-base"
+                />
+              </div>
+
+              {/* Date */}
+              <div className="relative">
+                <Calendar
+                  size={19}
+                  className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                />
+
+                <input
+                  type="date"
+                  value={dateFilter}
+                  onChange={(e) =>
+                    setDateFilter(e.target.value)
+                  }
+                  className="min-h-[48px] w-full rounded-xl border border-slate-200 bg-slate-50 py-3 pl-10 pr-4 text-sm font-medium text-slate-900 outline-none transition-all duration-200 hover:border-slate-300 focus:border-purple-500 focus:bg-white focus:ring-4 focus:ring-purple-100 sm:text-base"
+                />
+              </div>
+
+              {/* Search Button */}
+              <button
+                type="submit"
+                className="flex min-h-[48px] items-center justify-center gap-2 rounded-xl bg-purple-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-purple-700 hover:shadow-md active:scale-[0.98] sm:text-base"
+              >
+                <Search size={19} />
+                Search Events
+              </button>
             </div>
-
-            {/* Search Button */}
-            <button
-              type="submit"
-              className="flex min-h-[48px] items-center justify-center gap-2 rounded-lg bg-purple-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-purple-700 active:scale-[0.98] sm:text-base"
-            >
-              <Search size={20} />
-              Search
-            </button>
-          </div>
-        </form>
+          </form>
+        </div>
 
         {/* ================= LOADING ================= */}
         {loading && (
-          <div className="flex min-h-[250px] items-center justify-center py-16">
-            <RefreshCw
-              size={28}
-              className="animate-spin text-purple-600"
-            />
+          <div className="mx-auto flex min-h-[300px] max-w-7xl items-center justify-center py-16">
+            <div className="flex flex-col items-center justify-center">
+              <div className="mb-4 rounded-full bg-purple-50 p-4">
+                <RefreshCw
+                  size={28}
+                  className="animate-spin text-purple-600"
+                />
+              </div>
 
-            <span className="ml-3 text-sm text-slate-600 sm:text-base">
-              Loading events...
-            </span>
+              <p className="text-sm font-medium text-slate-600 sm:text-base">
+                Loading events...
+              </p>
+
+              <p className="mt-1 text-xs text-slate-400">
+                Please wait a moment.
+              </p>
+            </div>
           </div>
         )}
 
         {/* ================= ERROR ================= */}
         {!loading && error && (
-          <div className="rounded-xl bg-red-50 p-5 text-center text-sm text-red-600 sm:text-base">
-            {error}
+          <div className="mx-auto max-w-7xl rounded-2xl border border-red-100 bg-red-50 p-6 text-center sm:p-8">
+            <p className="text-sm font-medium text-red-600 sm:text-base">
+              {error}
+            </p>
+
+            <button
+              onClick={() =>
+                fetchEvents(locationFilter, dateFilter)
+              }
+              className="mt-4 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-700"
+            >
+              Try Again
+            </button>
           </div>
         )}
 
@@ -279,105 +315,146 @@ export default function DashboardPage() {
         {!loading &&
           !error &&
           events.length > 0 && (
-            <div className="grid grid-cols-1 gap-4 sm:gap-5 md:grid-cols-2 lg:grid-cols-3 lg:gap-6">
-              {events.map((event) => {
-                const seatsLeft =
-                  event.capacity - event.attendeeCount;
+            <div className="mx-auto max-w-7xl">
+              <div className="mb-4 flex items-center justify-between">
+                <div>
+                  <h2 className="text-lg font-bold text-slate-900 sm:text-xl">
+                    Available Events
+                  </h2>
 
-                const isFull = seatsLeft <= 0;
+                  <p className="mt-1 text-xs text-slate-500 sm:text-sm">
+                    {events.length}{' '}
+                    {events.length === 1
+                      ? 'event'
+                      : 'events'}{' '}
+                    available
+                  </p>
+                </div>
+              </div>
 
-                const isBooking =
-                  bookingLoading === event.id;
+              <div className="grid grid-cols-1 gap-4 sm:gap-5 md:grid-cols-2 lg:grid-cols-3 lg:gap-6">
+                {events.map((event) => {
+                  const seatsLeft =
+                    event.capacity - event.attendeeCount;
 
-                return (
-                  <div
-                    key={event.id}
-                    className="flex min-w-0 flex-col rounded-2xl bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg sm:p-6"
-                  >
-                    {/* Event Title */}
-                    <h2 className="mb-3 break-words text-lg font-bold leading-snug text-slate-900 sm:text-xl">
-                      {event.title}
-                    </h2>
+                  const isFull = seatsLeft <= 0;
 
-                    {/* Description */}
-                    <p className="mb-5 line-clamp-3 text-sm leading-6 text-slate-600">
-                      {event.description}
-                    </p>
+                  const isBooking =
+                    bookingLoading === event.id;
 
-                    {/* Event Info */}
-                    <div className="space-y-3 text-sm text-slate-600">
+                  return (
+                    <div
+                      key={event.id}
+                      className="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-purple-200 hover:shadow-xl"
+                    >
+                      {/* Card Top Accent */}
+                      <div className="h-1.5 bg-gradient-to-r from-purple-500 to-indigo-500" />
 
-                      {/* Date */}
-                      <div className="flex min-w-0 items-start gap-2">
-                        <Calendar
-                          size={18}
-                          className="mt-0.5 shrink-0 text-purple-600"
-                        />
+                      <div className="flex flex-1 flex-col p-5 sm:p-6">
 
-                        <span className="break-words">
-                          {event.date}
-                        </span>
-                      </div>
+                        {/* Event Title */}
+                        <div className="mb-3">
+                          <h2 className="break-words text-lg font-bold leading-snug text-slate-900 transition-colors group-hover:text-purple-700 sm:text-xl">
+                            {event.title}
+                          </h2>
+                        </div>
 
-                      {/* Location */}
-                      <div className="flex min-w-0 items-start gap-2">
-                        <MapPin
-                          size={18}
-                          className="mt-0.5 shrink-0 text-purple-600"
-                        />
+                        {/* Description */}
+                        <p className="mb-5 line-clamp-3 text-sm leading-6 text-slate-600">
+                          {event.description}
+                        </p>
 
-                        <span className="break-words">
-                          {event.location}
-                        </span>
-                      </div>
+                        {/* Event Info */}
+                        <div className="space-y-3 rounded-xl bg-slate-50 p-4 text-sm text-slate-600">
 
-                      {/* Availability */}
-                      <div className="flex items-center gap-2">
-                        <Users
-                          size={18}
-                          className="shrink-0 text-purple-600"
-                        />
+                          {/* Date */}
+                          <div className="flex min-w-0 items-start gap-3">
+                            <div className="mt-0.5 rounded-lg bg-purple-100 p-1.5">
+                              <Calendar
+                                size={16}
+                                className="text-purple-600"
+                              />
+                            </div>
 
-                        {isFull ? (
-                          <span className="font-semibold text-red-600">
-                            Sold Out
+                            <span className="break-words pt-1 font-medium">
+                              {event.date}
+                            </span>
+                          </div>
+
+                          {/* Location */}
+                          <div className="flex min-w-0 items-start gap-3">
+                            <div className="mt-0.5 rounded-lg bg-purple-100 p-1.5">
+                              <MapPin
+                                size={16}
+                                className="text-purple-600"
+                              />
+                            </div>
+
+                            <span className="break-words pt-1 font-medium">
+                              {event.location}
+                            </span>
+                          </div>
+
+                          {/* Availability */}
+                          <div className="flex items-center gap-3">
+                            <div className="rounded-lg bg-purple-100 p-1.5">
+                              <Users
+                                size={16}
+                                className="text-purple-600"
+                              />
+                            </div>
+
+                            {isFull ? (
+                              <span className="font-semibold text-red-600">
+                                Sold Out
+                              </span>
+                            ) : (
+                              <span className="font-medium text-slate-700">
+                                {seatsLeft} Seats Left
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Price */}
+                        <div className="mt-5 flex items-center justify-between border-t border-slate-100 pt-4">
+                          <span className="text-xs font-medium uppercase tracking-wide text-slate-400">
+                            Ticket Price
                           </span>
-                        ) : (
-                          <span>
-                            {seatsLeft} Seats Left
-                          </span>
-                        )}
-                      </div>
 
-                      {/* Price */}
-                      <div className="pt-2 text-lg font-bold text-slate-900 sm:text-xl">
-                        {event.price} BDT
+                          <span className="text-xl font-extrabold text-slate-900 sm:text-2xl">
+                            {event.price}{' '}
+                            <span className="text-sm font-semibold text-purple-600">
+                              BDT
+                            </span>
+                          </span>
+                        </div>
+
+                        {/* Booking Button */}
+                        <button
+                          onClick={() =>
+                            handleBooking(event.id)
+                          }
+                          disabled={isFull || isBooking}
+                          className={`mt-6 flex min-h-[48px] w-full items-center justify-center rounded-xl px-4 py-3 text-sm font-semibold text-white shadow-sm transition-all duration-200 active:scale-[0.98] sm:text-base ${
+                            isFull
+                              ? 'cursor-not-allowed bg-slate-400'
+                              : isBooking
+                              ? 'cursor-not-allowed bg-purple-400'
+                              : 'bg-purple-600 hover:bg-purple-700 hover:shadow-md'
+                          }`}
+                        >
+                          {isBooking
+                            ? 'Processing...'
+                            : isFull
+                            ? 'Sold Out'
+                            : 'Book & Pay'}
+                        </button>
                       </div>
                     </div>
-
-                    {/* Booking Button */}
-                    <button
-                      onClick={() =>
-                        handleBooking(event.id)
-                      }
-                      disabled={isFull || isBooking}
-                      className={`mt-6 min-h-[48px] w-full rounded-lg px-4 py-3 text-sm font-semibold text-white transition active:scale-[0.98] sm:text-base ${
-                        isFull
-                          ? 'cursor-not-allowed bg-slate-400'
-                          : isBooking
-                          ? 'cursor-not-allowed bg-purple-400'
-                          : 'bg-purple-600 hover:bg-purple-700'
-                      }`}
-                    >
-                      {isBooking
-                        ? 'Processing...'
-                        : isFull
-                        ? 'Full'
-                        : 'Book & Pay'}
-                    </button>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
           )}
 
@@ -385,10 +462,25 @@ export default function DashboardPage() {
         {!loading &&
           !error &&
           events.length === 0 && (
-            <div className="rounded-xl bg-white p-8 text-center shadow-sm sm:p-10">
-              <p className="text-sm text-slate-600 sm:text-base">
-                No events found matching your criteria.
-              </p>
+            <div className="mx-auto max-w-7xl">
+              <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm sm:p-12">
+                <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-purple-50">
+                  <Search
+                    size={25}
+                    className="text-purple-600"
+                  />
+                </div>
+
+                <h3 className="text-lg font-bold text-slate-900">
+                  No events found
+                </h3>
+
+                <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500 sm:text-base">
+                  No events match your current search criteria.
+                  Try changing the location or date and search
+                  again.
+                </p>
+              </div>
             </div>
           )}
       </div>
