@@ -56,6 +56,46 @@ The project was built to practice and demonstrate modern **frontend development,
 
 ---
 
+# 📸 Screenshots
+
+### 🏠 Landing Page
+
+![EventFlow Landing Page](./landing.png)
+
+### 📝 Registration
+
+![EventFlow Registration](./register.png)
+
+### 🔐 OTP Verification
+
+![EventFlow OTP Verification](./otp.png)
+
+### 📊 Dashboard
+
+![EventFlow Dashboard](./dashboard.png)
+
+### 🎫 Create Event
+
+![EventFlow Create Event](./create_event.png)
+
+### 👤 User Profile
+
+![EventFlow User Profile](./user_profile.png)
+
+### 📚 My Bookings
+
+![EventFlow My Bookings](./my_booking.png)
+
+### 💳 Payment
+
+![EventFlow Payment](./payment.png)
+
+### 🎟️ Ticket
+
+![EventFlow Ticket](./ticket.png)
+
+---
+
 # 🚀 Key Features
 
 <table>
