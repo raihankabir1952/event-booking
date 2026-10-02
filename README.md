@@ -94,6 +94,10 @@ The project was built to practice and demonstrate modern **frontend development,
 
 ![EventFlow Ticket](./ticket.png)
 
+### 🎟️ confirmation_mail
+
+![EventFlow confirmation_mail](./confirmation_mail.png)
+
 ---
 
 # 🚀 Key Features
